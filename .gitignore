@@ -1,0 +1,16 @@
+# Ambiente Virtual (NUNCA enviar para o GitHub - muito pesado)
+.venv/
+venv/
+env/
+
+# Caches do Python
+__pycache__/
+*.py[cod]
+
+# Arquivos temporários e backups locais
+*.bak
+teste_*.py
+inspect_*.py
+*.log
+# Bases de dados (muito pesadas e não necessárias para o app)
+*.csv
