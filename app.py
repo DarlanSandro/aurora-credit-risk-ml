@@ -315,27 +315,34 @@ if botao_avaliar:
         df_top5 = df_shap_local.sort_values(by="Impacto Absoluto", ascending=False).head(5)
 
         # Gráfico Horizontal das Top 5 Features
-        fig, ax = plt.subplots(figsize=(9, 4.5))
+        fig, ax = plt.subplots(figsize=(10, 4.8))
         df_plot = df_top5.sort_values(by="Impacto SHAP", ascending=True)
 
         cores = ["#e74c3c" if val > 0 else "#27ae60" for val in df_plot["Impacto SHAP"]]
-        barras = ax.barh(df_plot["Fator de Risco"], df_plot["Impacto SHAP"], color=cores, height=0.6)
+        barras = ax.barh(df_plot["Fator de Risco"], df_plot["Impacto SHAP"], color=cores, height=0.55)
 
         ax.axvline(0, color="#34495e", linestyle="--", linewidth=1.2, alpha=0.7)
         ax.set_xlabel("Impacto no Risco de Crédito (SHAP Value)", fontsize=11, fontweight="bold")
-        ax.set_title("Top 5 Variáveis Mais Impactantes na Predição Individual", fontsize=12, fontweight="bold")
+        ax.set_title("Top 5 Variáveis Mais Impactantes na Predição Individual", fontsize=12, fontweight="bold", pad=15)
         ax.grid(axis="x", linestyle=":", alpha=0.6)
 
-        # Adicionar rótulos nas barras
+        # Margem simétrica generosa para que os textos nunca colidam com os rótulos do eixo Y
+        max_abs = max(abs(df_plot["Impacto SHAP"].min()), abs(df_plot["Impacto SHAP"].max()))
+        margem = max(max_abs * 1.45, 0.15)
+        ax.set_xlim(-margem, margem)
+        ax.tick_params(axis="y", labelsize=10, pad=8)
+
+        # Adicionar rótulos nas barras com alinhamento dinâmico
         for barra in barras:
             largura = barra.get_width()
-            pos_x = largura + (0.02 if largura >= 0 else -0.05)
-            alinhamento = "left" if largura >= 0 else "right"
+            offset = margem * 0.03 if largura >= 0 else -margem * 0.03
+            ha = "left" if largura >= 0 else "right"
+            cor_texto = "#c0392b" if largura >= 0 else "#1e8449"
             ax.text(
-                pos_x, barra.get_y() + barra.get_height() / 2,
+                largura + offset, barra.get_y() + barra.get_height() / 2,
                 f"{largura:+.3f}",
-                va="center", ha=alinhamento, fontsize=10, fontweight="bold",
-                color="#c0392b" if largura >= 0 else "#1e8449"
+                va="center", ha=ha, fontsize=10, fontweight="bold",
+                color=cor_texto
             )
 
         plt.tight_layout()
